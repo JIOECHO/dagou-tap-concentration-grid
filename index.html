@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- PWA 外壳：打开方式同 B 站玩具（可安装 / 全屏 / iframe 加载游戏） -->
+  <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="大狗Tap">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(function () {});
+      });
+    }
+    var __toyDeferredPrompt = null;
+    window.addEventListener("beforeinstallprompt", function (e) {
+      e.preventDefault();
+      __toyDeferredPrompt = e;
+      var btn = document.getElementById("installBtn");
+      if (btn) btn.style.display = "inline-block";
+    });
+    window.__toyInstall = function () {
+      if (__toyDeferredPrompt) {
+        __toyDeferredPrompt.prompt();
+        var p = __toyDeferredPrompt;
+        __toyDeferredPrompt = null;
+        return p.userChoice;
+      }
+      return Promise.resolve({ outcome: "unavailable" });
+    };
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>大狗Tap · 浓度网格</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #120a24; overflow: hidden; }
+    iframe { display: block; border: 0; width: 100%; height: 100vh; }
+    #installBtn {
+      position: fixed; bottom: 22px; right: 18px; z-index: 99; display: none;
+      background: linear-gradient(135deg, #fbbf24, #f472b6); color: #1a1030;
+      border: none; border-radius: 999px; padding: 10px 18px; font-size: 15px;
+      font-weight: bold; cursor: pointer; box-shadow: 0 4px 18px rgba(251,191,36,.4);
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <iframe src="game.html" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <button id="installBtn" onclick="window.__toyInstall()">⬇️ 安装到桌面</button>
+</body>
+</html>
